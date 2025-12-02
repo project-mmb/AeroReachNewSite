@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AeroReach — My Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+<style>
+  /* ======= GLOBAL ======= */
+  *{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Inter",sans-serif;
+  }
+
+  body{
+    background:#f5f9ff;
+    color:#1f2937;
+    display:flex;
+    justify-content:center;
+    padding:18px;
+  }
+
+  .wrap{
+    width:100%;
+    max-width:520px;
+  }
+
+  /* ======= HEADER ======= */
+  .hero{
+    text-align:center;
+    margin-bottom:14px;
+  }
+
+  .hero h1{
+    font-size:24px;
+    font-weight:700;
+    color:#2563eb;
+  }
+
+  .hero small{
+    color:#6b7280;
+    font-size:13px;
+  }
+
+  /* ======= PROFILE CARD ======= */
+  .card{
+    background:rgba(255, 255, 255, 0.748);
+    border-radius:18px;
+    box-shadow:0 5px 22px rgba(0,0,0,.06);
+    padding:18px;
+    margin-bottom:18px;
+  }
+
+  .row{
+    display:flex;
+    justify-content:space-between;
+    padding:6px 0;
+    font-size:14px;
+  }
+
+  .label{
+    color:#6b7280;
+  }
+
+  .value{
+    font-weight:600;
+  }
+
+  /* ======= EMERGENCY BUTTON ======= */
+  .danger-btn{
+    width:100%;
+    background:#ef4444;
+    color:white;
+    font-weight:700;
+    font-size:15px;
+    border:none;
+    padding:15px;
+    border-radius:14px;
+    cursor:pointer;
+    transition:0.2s;
+    margin-bottom:18px;
+  }
+  .danger-btn:hover{
+    background:#b91c1c;
+  }
+
+  /* ======= ACTION BUTTON CARDS ======= */
+  .action-btn{
+    width:100%;
+    padding:15px;
+    border-radius:14px;
+    border:1px solid #dbe3ff;
+    background:#becbf4;
+    margin-bottom:12px;
+    font-size:15px;
+    font-weight:600;
+    text-align:center;
+    cursor:pointer;
+    transition:0.2s;
+  }
+
+  .action-btn:hover{
+    border-color:#2563eb;
+    color:#2563eb;
+  }
+
+  /* ======= STATUS ======= */
+  .status{
+    background:white;
+    padding:16px;
+    border-radius:14px;
+    border:1px solid #e5e7eb;
+    text-align:center;
+    margin-bottom:18px;
+    font-weight:600;
+    color:#374151;
+  }
+
+  /* ======= HEALTH TIPS ======= */
+  .tips{
+    background:white;
+    padding:20px;
+    border-radius:18px;
+    box-shadow:0 4px 22px rgba(0,0,0,.05);
+    margin-bottom:30px;
+  }
+
+  .tips-title{
+    font-size:20px;
+    font-weight:700;
+    color:#2564eb;
+    margin-bottom:10px;
+  }
+
+  .tip{
+    font-size:15px;
+    color:#374151;
+    margin-bottom:10px;
+    line-height:1.4;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="hero">
+    <h1>Hello <span id="nameTag"></span> 👋</h1>
+    <small>Your health is our priority 🚁💙</small>
+  </div>
+
+  <!-- PROFILE -->
+  <div class="card">
+    <div class="row">
+      <div class="label">Village / Area</div>
+      <div class="value" id="village">—</div>
+    </div>
+    <div class="row">
+      <div class="label">Medical Focus</div>
+      <div class="value" id="cond">—</div>
+    </div>
+    <div class="row">
+      <div class="label">GPS</div>
+      <div class="value" id="gps">Checking…</div>
+    </div>
+  </div>
+
+  <!-- EMERGENCY -->
+  <button class="danger-btn" onclick="goEmergency()">
+    🚨 Request Emergency Assistance
+  </button>
+
+  <!-- ACTION BUTTONS -->
+  <div class="action-btn" onclick="alert('Drone Delivery Coming Soon!')">
+    📦 Drone Medical Kit
+  </div>
+
+  <div class="action-btn" onclick="alert('Medication refill coming soon!')">
+    💊 Medication Refill
+  </div>
+
+  <div class="action-btn" onclick="alert('Clinic locator coming soon!')">
+    🏥 Nearby Clinics
+  </div>
+
+  <!-- STATUS -->
+  <div class="status" id="statusBox">No active emergency.</div>
+
+  <!-- TIPS -->
+  <div class="tips">
+    <div class="tips-title">Emergency Safety Tips</div>
+    <div class="tip">🩸 <b>Heavy bleeding:</b> Apply pressure, elevate, add layers, don't remove soaked cloth.</div>
+    <div class="tip">🌬️ <b>Asthma:</b> Sit upright, breathe slow, inhaler (1 puff every 30–60 sec, max 10).</div>
+    <div class="tip">🔥 <b>Burns:</b> Rinse with water 10–20 mins, do not pop blisters.</div>
+    <div class="tip">👶 <b>Postpartum:</b> Heavy bleeding? Lie down & contact clinic immediately.</div>
+    <div class="tip">🛑 <b>GBV:</b> Move to safety. Do NOT wash/wipe evidence.</div>
+  </div>
+
+</div>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<script>
+const config={
+  apiKey:"AIzaSyDgEH4QnHBLWzg54MNexYZJaATpRHFC_DA",
+  authDomain:"aeroreach-5d4ae.firebaseapp.com",
+  databaseURL:"https://aeroreach-5d4ae-default-rtdb.firebaseio.com",
+  projectId:"aeroreach-5d4ae",
+  storageBucket:"aeroreach-5d4ae.appspot.com",
+  messagingSenderId:"477756305528",
+  appId:"1:477756305528:web:470f50f591bee98e3e3d8d"
+};
+firebase.initializeApp(config);
+const db=firebase.database();
+
+/* USER AUTH */
+const uid=localStorage.getItem("uid");
+if(!uid) window.location="signup.html";
+
+/* PROFILE DATA */
+db.ref("users/"+uid).once("value",snap=>{
+  const d=snap.val();
+  if(!d){
+    window.location="signup.html";
+    return;
+  }
+  nameTag.innerText = d.name;
+  village.innerText = d.village;
+  cond.innerText = d.medical;
+  gps.innerText = d.gps ? "📍 Saved" : "No GPS saved";
+});
+
+/* STATUS */
+db.ref("alerts").orderByChild("userId").equalTo(uid).on("value",snap=>{
+  if(!snap.exists()){
+    statusBox.innerText="No active emergency.";
+    return;
+  }
+  let arr=[];
+  snap.forEach(x=>arr.push(x.val()));
+  arr.sort((a,b)=>b.createdAt-a.createdAt);
+  statusBox.innerText="🚁 " + arr[0].status;
+});
+
+/* NAV */
+function goEmergency(){
+  window.location="emergency.html";
+}
+</script>
+
+</body>
+</html>
